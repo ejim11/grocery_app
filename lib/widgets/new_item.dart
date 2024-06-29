@@ -16,6 +16,7 @@ class NewItem extends StatefulWidget {
 }
 
 class _NewsItemState extends State<NewItem> {
+  // the global key for the form
   final _formKey = GlobalKey<FormState>();
 
   var _enteredName = '';
@@ -24,15 +25,19 @@ class _NewsItemState extends State<NewItem> {
   var _isSending = false;
 
   void _saveItem() async {
+    // check if the form is validated
     if (_formKey.currentState!.validate()) {
+      // save the current state of the form
       _formKey.currentState!.save();
       setState(() {
         _isSending = true;
       });
 
+// create a url for sending the request
       final url = Uri.https('flutter-prep-bfc95-default-rtdb.firebaseio.com',
           'shopping-list.json');
 
+// send a post request for creating a new item
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},

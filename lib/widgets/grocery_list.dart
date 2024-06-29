@@ -15,23 +15,30 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-  List<GroceryItem> _groceryItems = [];
+  // state for managing the grocery items
+  final List<GroceryItem> _groceryItems = [];
+
+  // future state for managing the loaded items
   late Future<List<GroceryItem>> _loadedItems;
   // String? _error;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    // initializing the loaded items
     _loadedItems = _loadItems();
   }
 
+// function that gets the loaded items in the future state
   Future<List<GroceryItem>> _loadItems() async {
+    // creating the url
     final url = Uri.https(
         'flutter-prep-bfc95-default-rtdb.firebaseio.com', 'shopping-list.json');
 
+// sending a request to the url
     final response = await http.get(url);
 
+// check if it returns an error
     if (response.statusCode >= 400) {
       throw Exception('Failed to fetch grocery, please try again later');
       // setState(() {
@@ -47,12 +54,15 @@ class _GroceryListState extends State<GroceryList> {
 
     final List<GroceryItem> loadedItems = [];
 
+// looping through the gotten data
     for (final item in listData.entries) {
+      // getting the category of each item
       final category = categories.entries
           .firstWhere(
               (catItem) => catItem.value.title == item.value['category'])
           .value;
 
+// adding the grocery item to the list
       loadedItems.add(
         GroceryItem(
             id: item.key,
@@ -62,9 +72,10 @@ class _GroceryListState extends State<GroceryList> {
       );
     }
 
-    return _loadItems();
+    return loadedItems;
   }
 
+// function for adding items to the list
   void _addItems() async {
     final newItem =
         await Navigator.of(context).push<GroceryItem>(MaterialPageRoute(
@@ -80,6 +91,7 @@ class _GroceryListState extends State<GroceryList> {
     });
   }
 
+// function for removing item from the list
   void _removeItem(GroceryItem item) async {
     final index = _groceryItems.indexOf(item);
 
